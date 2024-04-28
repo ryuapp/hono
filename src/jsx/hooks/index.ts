@@ -138,15 +138,12 @@ const setShadow = (node: Node) => {
   ;(node as any).s?.forEach(setShadow)
 }
 
-type UseStateType = {
+export const useState: {
   <T>(initialState: T | (() => T)): [T, UpdateStateFunction<T>]
   <T = undefined>(): [T | undefined, UpdateStateFunction<T | undefined>]
-}
-export const useState: UseStateType = <T>(
-  initialState?: T | (() => T)
-): [T, UpdateStateFunction<T>] => {
+} = (<T>(initialState: any) => {
   const resolveInitialState = () =>
-    typeof initialState === 'function' ? (initialState as () => T)() : (initialState as T)
+    typeof initialState === 'function' ? (initialState as () => T)() : initialState
 
   const buildData = buildDataStack.at(-1) as [unknown, NodeObject]
   if (!buildData) {
@@ -209,7 +206,7 @@ export const useState: UseStateType = <T>(
       }
     },
   ])
-}
+}) as typeof useState
 
 export const useReducer = <T, A>(
   reducer: (state: T, action: A) => T,
