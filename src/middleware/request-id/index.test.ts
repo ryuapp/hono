@@ -11,7 +11,7 @@ describe('Request ID Middleware', () => {
     const res = await app.request('http://localhost/requestID')
     expect(res).not.toBeNull()
     expect(res.status).toBe(200)
-    expect(res.body).not.toBe('No response')
+    expect(await res.text()).not.toBe('No response')
   })
 
   it('Should return configured request id', async () => {
@@ -22,6 +22,6 @@ describe('Request ID Middleware', () => {
     })
     expect(res).not.toBeNull()
     expect(res.status).toBe(200)
-    expect(res.body).toBe('hono-is-cool')
+    expect(await res.text()).toBe('hono-is-cool')
   })
 })
