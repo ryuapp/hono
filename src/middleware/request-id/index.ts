@@ -26,6 +26,6 @@ export const requestID = (): MiddlewareHandler => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     c.req.raw.headers['X-Request-ID'] = requestID
-    await next
+    await next()
   }
 }
