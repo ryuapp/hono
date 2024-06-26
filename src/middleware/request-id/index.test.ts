@@ -1,23 +1,19 @@
 import { Hono } from '../../hono'
-import { requestId } from '.'
+import type { RequestIDVariables } from '.'
+import { requestID } from '.'
 
 describe('Request ID Middleware', () => {
-  type Env = {
-    Variables: {
-      requestId: string
-    }
-  }
+  type Variables = RequestIDVariables
+  const app = new Hono<{Variables: Variables}>()
 
-  const app = new Hono<Env>()
-
-  app.use('*', requestId())
-  app.get('/requestId', (c) => c.text(c.var.requestId ?? 'No Response'))
+  app.use('*', requestID())
+  app.get('/requestId', (c) => c.text(c.get('requestID') ?? 'No Request ID'))
 
   it('Should return random request id', async () => {
     const res = await app.request('http://localhost/requestId')
     expect(res).not.toBeNull()
     expect(res.status).toBe(200)
-    expect(await res.text()).not.toBe('No Response')
+    expect(await res.text()).not.toBe('No Request ID')
   })
 
   it('Should return configured request id', async () => {
