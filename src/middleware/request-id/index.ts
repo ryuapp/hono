@@ -6,8 +6,8 @@
 import type { MiddlewareHandler } from '../../types'
 
 export type RequesIdOptions = {
-  header: string
   maxLength: number
+  headerName: string
   variableName: string
   generator: () => string
 }
@@ -36,7 +36,7 @@ export const requestId = (options?: RequesIdOptions): MiddlewareHandler => {
   return async function requestId(c, next) {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const maxLength = options?.maxLength ?? 255
-    const headerName = options?.header ?? 'X-Request-Id'
+    const headerName = options?.headerName ?? 'X-Request-Id'
     const requestId = c.req.header(headerName) ?? options?.generator() ?? crypto.randomUUID()
     const variableName = options?.variableName ?? 'requestId'
     requestId.replace(/[^\w\-]gi/, '').substring(0, maxLength)
