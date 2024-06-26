@@ -39,14 +39,18 @@ export type RequesIDOptions = {
  * ```
  */
 export const requestID = (options?: RequesIDOptions): MiddlewareHandler => {
+  const maxLength = options?.maxLength ?? 255
+  const headerName = options?.headerName ?? 'X-Request-Id'
   return async function requestID(c, next) {
-    const maxLength = options?.maxLength ?? 255
-    const headerName = options?.headerName ?? 'X-Request-Id'
-    const requestID = c.req.header(headerName) ??  options?.generator?.() ?? crypto.randomUUID()
-    requestID.replace(/[^\w\-]gi/, '').substring(0, maxLength)
+    let requestId = c.req.header(headerName)
+    if (requestId) {
+      requestId = requestId.replace(/[^\w\-]/g, '').substring(0, maxLength)
+    } else {
+      requestId = options?.generator?.() ?? crypto.randomUUID()
+    }
 
-    c.set('requestID', requestID)
-    c.header(headerName, requestID)
+    c.set('requestID', requestId)
+    c.header(headerName, requestId)
     await next()
   }
 }
