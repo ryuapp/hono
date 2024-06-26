@@ -3,8 +3,8 @@ import { requestId } from '.'
 
 describe('Request ID Middleware', () => {
   type Env = {
-    Variables:{
-      'requestId': string
+    Variables: {
+      requestId: string
     }
   }
 

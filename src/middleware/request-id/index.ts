@@ -39,8 +39,8 @@ export const requestId = (options?: RequesIdOptions): MiddlewareHandler => {
     const maxLength = options?.maxLength ?? 255
     const headerName = options?.header ?? 'X-Request-Id'
     const requestId = c.req.header(headerName) ?? generator()
-    const variableName = options?.variableName ?? 'requestId' 
-    requestId.replace(/[^\w\-]gi/,'').substring(0, maxLength)
+    const variableName = options?.variableName ?? 'requestId'
+    requestId.replace(/[^\w\-]gi/, '').substring(0, maxLength)
 
     c.set(variableName, requestId)
     c.header(headerName, requestId)
