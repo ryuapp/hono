@@ -5,24 +5,45 @@
 
 import type { MiddlewareHandler } from '../../types'
 
+export type RequesIdOptions = {
+  header: string
+  maxLength: number
+  variableName: string
+  generator: () => string
+}
+
 /**
  * Request ID Middleware for Hono.
  * @returns {MiddlewareHandler} The middleware handler function.
  *
  * @example
  * ```ts
- * const app = new Hono()
+ * type Env = {
+ *   Variables: {
+ *    requestId: string
+ *  }
+ * }
+ * const app = new Hono<Env>()
  *
  * app.use(requestId())
  * app.get('/', (c) => {
- *   console.log(c.req.header('X-Request-Id')) // Debug
+ *   console.log(c.var.requestId) // Debug
  *   return c.text('Hello World!')
  * })
  * ```
  */
-export const requestId = (): MiddlewareHandler => {
+export const requestId = (options?: RequesIdOptions): MiddlewareHandler => {
   return async function requestId(c, next) {
-    c.header('X-Request-Id', c.req.header('X-Request-Id') ?? crypto.randomUUID())
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const generator = options?.generator ?? crypto.randomUUID
+    const maxLength = options?.maxLength ?? 255
+    const headerName = options?.header ?? 'X-Request-Id'
+    const requestId = c.req.header(headerName) ?? generator()
+    const variableName = options?.variableName ?? 'requestId' 
+    requestId.replace(/[^\w\-]gi/,'').substring(0, maxLength)
+
+    c.set(variableName, requestId)
+    c.header(headerName, requestId)
     await next()
   }
 }
