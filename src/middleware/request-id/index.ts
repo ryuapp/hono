@@ -35,10 +35,9 @@ export type RequesIdOptions = {
 export const requestId = (options?: RequesIdOptions): MiddlewareHandler => {
   return async function requestId(c, next) {
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    const generator = options?.generator ?? crypto.randomUUID
     const maxLength = options?.maxLength ?? 255
     const headerName = options?.header ?? 'X-Request-Id'
-    const requestId = c.req.header(headerName) ?? generator()
+    const requestId = c.req.header(headerName) ?? options?.generator() ?? crypto.randomUUID()
     const variableName = options?.variableName ?? 'requestId'
     requestId.replace(/[^\w\-]gi/, '').substring(0, maxLength)
 
