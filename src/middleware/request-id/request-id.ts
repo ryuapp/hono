@@ -10,9 +10,9 @@ export type RequestIDVariables = {
 }
 
 export type RequesIDOptions = {
-  maxLength: number
-  headerName: string
-  generator: () => string
+  maxLength?: number
+  headerName?: string
+  generator?: () => string
 }
 
 /**
@@ -42,7 +42,7 @@ export const requestID = (options?: RequesIDOptions): MiddlewareHandler => {
   return async function requestID(c, next) {
     const maxLength = options?.maxLength ?? 255
     const headerName = options?.headerName ?? 'X-Request-Id'
-    const requestID = c.req.header(headerName) ?? options?.generator() ?? crypto.randomUUID()
+    const requestID = c.req.header(headerName) ??  options?.generator?.() ?? crypto.randomUUID()
     requestID.replace(/[^\w\-]gi/, '').substring(0, maxLength)
 
     c.set('requestID', requestID)
