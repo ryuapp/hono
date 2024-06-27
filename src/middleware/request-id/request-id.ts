@@ -10,6 +10,7 @@ export type RequestIDVariables = {
 }
 
 export type RequesIDOptions = {
+  limitLength?: number
   headerName?: string
   generator?: () => string
 }
@@ -18,6 +19,8 @@ export type RequesIDOptions = {
  * Request ID Middleware for Hono.
  *
  * @param {object} options - Options for Request ID middleware.
+ * @param {number} [options.limitLength=255] - A maximum length of request id.
+ * If positive truncates the request id at the specified length.
  * @param {string} [options.headerName=X-Request-Id] - A header name.
  * @param {generator} [options.generator=crypto.randomUUID()] - A request id generation function
  *
@@ -36,11 +39,13 @@ export type RequesIDOptions = {
  * ```
  */
 export const requestID = (options?: RequesIDOptions): MiddlewareHandler => {
+  const limitLength = options?.limitLength ?? 255
   const headerName = options?.headerName ?? 'X-Request-Id'
   return async function requestID(c, next) {
     let requestId = c.req.header(headerName)
     if (requestId) {
-      requestId = requestId.replace(/[^\w\-]/g, '').substring(0, 255)
+      requestId = requestId.replace(/[^\w\-]/g, '')
+      requestId = limitLength > 0 ? requestId.substring(0, limitLength) : requestId
     } else {
       requestId = options?.generator?.() ?? crypto.randomUUID()
     }
