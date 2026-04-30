@@ -10,7 +10,12 @@ import type {
   JSX as HonoJSX,
   IntrinsicElements as IntrinsicElementsDefined,
 } from './intrinsic-elements'
-import { isValidAttributeName, normalizeIntrinsicElementKey, styleObjectForEach } from './utils'
+import {
+  isValidAttributeName,
+  isValidTagName,
+  normalizeIntrinsicElementKey,
+  styleObjectForEach,
+} from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Props = Record<string, any>
@@ -135,6 +140,9 @@ export class JSXNode implements HtmlEscaped {
   isEscaped: true = true as const
   localContexts?: LocalContexts
   constructor(tag: string | Function, props: Props, children: Child[]) {
+    if (typeof tag !== 'function' && !isValidTagName(tag)) {
+      throw new Error(`Invalid JSX tag name: ${tag}`)
+    }
     this.tag = tag
     this.props = props
     this.children = children
