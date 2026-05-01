@@ -185,7 +185,7 @@ export class JSXNode implements HtmlEscaped {
     buffer[0] += `<${tag}`
 
     const normalizeKey: (key: string) => string =
-      nameSpaceContext && useContext(nameSpaceContext) === 'svg'
+      tag === 'svg' || (nameSpaceContext && useContext(nameSpaceContext) === 'svg')
         ? (key) => toSVGAttributeName(normalizeIntrinsicElementKey(key))
         : (key) => normalizeIntrinsicElementKey(key)
     for (let [key, v] of Object.entries(props)) {
